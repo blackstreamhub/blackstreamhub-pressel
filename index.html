@@ -180,7 +180,7 @@
 
     <div class="card">
       <div class="hero">
-        <h1>Sponsored Information About Nail & Skin Care</h1>
+        <h1>Sponsored Information About Nail &amp; Skin Care</h1>
         <p class="sub">
           This page contains sponsored informational content. It is not medical advice.
           Always consult a qualified professional for personal guidance.
@@ -192,7 +192,8 @@
           <div class="kicker">Product</div>
 
           <div class="imgWrap">
-            <img id="mainImg" src="assets/img/kerrassentials/creative-01.jpg" alt="Sponsored product image">
+            <!-- ✅ FIXED PATH: includes /img/ inside kerrassentials -->
+            <img id="mainImg" src="assets/img/kerrassentials/img/creative-01.jpg" alt="Sponsored product image">
           </div>
 
           <p class="note">
@@ -206,6 +207,10 @@
 
           <p class="sub" style="margin:0 0 8px;">
             Click below to view the official presentation.
+          </p>
+
+          <p class="sub" style="margin:0 0 6px;">
+            You’ll be taken to an external website. This page is an advertisement.
           </p>
 
           <a class="btn" id="ctaBtn" href="#" rel="nofollow noopener sponsored">
@@ -233,7 +238,6 @@
 
   <script>
     (function(){
-
       const DESTINATION_URL = "https://kerassentials.com/?hopId=66916c46-736f-4651-80be-f9e080b6ab43&hop=adconvertx";
 
       const yr = document.getElementById("yr");
@@ -249,30 +253,43 @@
 
       const mainImg = document.getElementById("mainImg");
       if (mainImg) {
-        mainImg.src = "assets/img/kerrassentials/creative-" + img + ".jpg";
+        // ✅ FIXED PATH: includes /img/ inside kerrassentials
+        mainImg.src = "assets/img/kerrassentials/img/creative-" + img + ".jpg";
       }
 
       const btn = document.getElementById("ctaBtn");
+      const nextBox = document.getElementById("nextBox");
       const waitMsg = document.getElementById("waitMsg");
 
       let unlocked = false;
       setTimeout(() => { unlocked = true; }, 2500);
 
-      function go(){
+      let lastClick = 0;
+      function tooFast(){
+        const now = Date.now();
+        const fast = (now - lastClick) < 350;
+        lastClick = now;
+        return fast;
+      }
+
+      function buildUrl(){
         try{
           const u = new URL(DESTINATION_URL);
           u.searchParams.set("subid", img);
-          window.location.href = u.toString();
+          return u.toString();
         }catch(e){
-          window.location.href = DESTINATION_URL;
+          return DESTINATION_URL;
         }
       }
+
+      function go(){ window.location.href = buildUrl(); }
 
       function safeGo(){
         if(!unlocked){
           if (waitMsg) waitMsg.style.display = "block";
           return;
         }
+        if(tooFast()) return;
         go();
       }
 
@@ -283,6 +300,13 @@
         });
       }
 
+      if(nextBox){
+        nextBox.style.cursor = "pointer";
+        nextBox.addEventListener("click", function(e){
+          if (e.target && e.target.closest && e.target.closest("#ctaBtn")) return;
+          safeGo();
+        });
+      }
     })();
   </script>
 </body>
